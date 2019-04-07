@@ -1,0 +1,24 @@
+language: bash
+services: docker
+
+matrix:
+  include:
+    - os: linux
+      env: VERSION=12 VARIANT=alpine
+
+before_script:
+  - env | sort
+  - cd "$VERSION"
+  - imageBase="bwalsh517/java-alpine:$VERSION"
+  - imageSuffix="${VARIANT:+-$(basename "$VARIANT")}"
+
+script:
+  - |
+    (
+      set -Eeuo pipefail
+      set -x
+      docker build -t "$imageBase-jre$imageSuffix" "jre${VARIANT:+/$VARIANT}"
+    )
+
+after_script:
+  - docker images
